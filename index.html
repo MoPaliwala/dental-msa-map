@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dental MSA Map</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+    <style>
+        #map { height: 700px; width: 100%; }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+        h1 { text-align: center; padding: 10px; margin: 0; }
+        #legend {
+            position: absolute; bottom: 20px; right: 20px;
+            background: rgba(255, 255, 255, 0.9); padding: 12px;
+            border: 1px solid #ccc; border-radius: 5px; z-index: 1000;
+            font-size: 13px; line-height: 1.5; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        #legend h4 { margin-top: 0; margin-bottom: 8px; text-align: center; font-size: 14px; font-weight: bold; }
+        .legend-item { display: flex; align-items: center; margin-bottom: 4px; }
+        .legend-color-box { width: 18px; height: 18px; margin-right: 10px; border: 1px solid #555; flex-shrink: 0; }
+    </style>
+</head>
+<body>
+    <h1>Dental MSA Map</h1>
+    <div id="map"></div>
+    <div id="legend"><h4>MSA Ownership</h4></div>
+
+    <script>
+        var southWest = L.latLng(24.396308, -125.000000);
+        var northEast = L.latLng(49.384358, -66.934570);
+        var bounds = L.latLngBounds(southWest, northEast);
+
+        var map = L.map('map', {
+            maxBounds: bounds,
+            maxBoundsViscosity: 1.0,
+            minZoom: 4
+        }).setView([39.8283, -98.5795], 4);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            minZoom: 3
+        }).addTo(map);
+
+        // --- Add Geocoder Control (Updated Configuration) ---
+        var geocodingService = L.Control.Geocoder.nominatim({
+            geocodingQueryParams: {
+                countrycodes: 'us' // Strongly bias results to the US
+            }
+        });
+
+        L.Control.geocoder({
+            query: '',
+            placeholder: 'Search for a city or town...',
+            defaultMarkGeocode: true,
+            geocoder: geocodingService,
+            autocomplete: true,      // Ensure autocomplete is active
+            suggestMinLength: 1,     // Start suggesting from 1 character
+            suggestTimeout: 250,     // Debounce time for suggestions
+            collapsed: false,
+            position: 'topright',
+            errorMessage: 'Nothing found, try another search.'
+        })
+        .on('markgeocode', function(e) {
+            var bbox = e.geocode.bbox;
+            var center = e.geocode.center;
+            if (bbox) {
+                map.fitBounds(bbox);
+            } else {
+                map.setView(center, 10);
+            }
+            console.log("Geocode result:", e.geocode.name, "at", center);
+        })
+        .addTo(map);
+        // --- End Geocoder Control ---
+
+        var geojsonPath = 'mygeodata/cb_2018_us_cbsa_5m.geojson';
+        var csvPath = 'msa_owners.csv';
+        let msaOwnerData = {};
+
+        const ownerColors = {
+            "Qasim": "#E41A1C", "Abdul": "#377EB8", "Angela": "#4DAF4A",
+            "Jeanellah": "#984EA3", "UnassignedOrOther": "#CCCCCC"
+        };
+
+        function parseCSV(text) {
+            const lines = text.trim().split('\n');
+            if (lines.length < 2) { return {}; }
+            const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+            const data = {};
+            const msaNameIndex = headers.indexOf('msa_name'), msaOwnerIndex = headers.indexOf('msa_owner'), supplyOwnerIndex = headers.indexOf('supply_owner');
+            if (msaNameIndex === -1 || msaOwnerIndex === -1 || supplyOwnerIndex === -1) {
+                console.error("CSV parse error: Required headers not found."); alert("Error: Missing columns in msa_owners.csv."); return {};
+            }
+            for (let i = 1; i < lines.length; i++) {
+                let values = [], field = '', inQuotes = false;
+                for (const char of lines[i]) {
+                    if (char === '"' && (lines[i][lines[i].indexOf(char)-1] !== '\\')) inQuotes = !inQuotes;
+                    else if (char === ',' && !inQuotes) { values.push(field.trim()); field = ''; }
+                    else field += char;
+                }
+                values.push(field.trim());
+                if (values.length >= headers.length) {
+                    const msaName = values[msaNameIndex].trim();
+                    data[msaName] = { msa_owner: values[msaOwnerIndex] ? values[msaOwnerIndex].trim() : "", supply_owner: values[supplyOwnerIndex] ? values[supplyOwnerIndex].trim() : "N/A" };
+                }
+            }
+            return data;
+        }
+
+        Promise.all([
+            fetch(geojsonPath).then(r => r.ok ? r.json() : Promise.reject(r.statusText)),
+            fetch(csvPath).then(r => r.ok ? r.text() : Promise.reject(r.statusText))
+        ])
+        .then(function([geojsonData, csvTextData]) {
+            msaOwnerData = parseCSV(csvTextData);
+            const ownerCounts = {};
+            Object.keys(ownerColors).forEach(k => ownerCounts[k] = 0);
+            geojsonData.features.forEach(f => {
+                const name = f.properties && f.properties.NAME ? f.properties.NAME : null;
+                let ownerKey = "UnassignedOrOther";
+                if (name && msaOwnerData[name]) {
+                    const owner = msaOwnerData[name].msa_owner;
+                    if (owner && owner.trim() !== "" && ownerColors[owner]) ownerKey = owner;
+                }
+                ownerCounts[ownerKey]++;
+            });
+            const legendDiv = document.getElementById('legend');
+            ["Qasim", "Abdul", "Angela", "Jeanellah", "UnassignedOrOther"].forEach(name => {
+                if (ownerCounts.hasOwnProperty(name)) {
+                    const item = document.createElement('div'); item.className = 'legend-item';
+                    item.innerHTML = `<div class="legend-color-box" style="background-color:${ownerColors[name]};"></div><span>${name === "UnassignedOrOther" ? "Unassigned / Other" : name}: ${ownerCounts[name]}</span>`;
+                    legendDiv.appendChild(item);
+                }
+            });
+            var geojsonLayer = L.geoJSON(geojsonData, {
+                style: f => {
+                    let color = ownerColors.UnassignedOrOther;
+                    const name = f.properties && f.properties.NAME ? f.properties.NAME : null;
+                    if (name && msaOwnerData[name]) {
+                        const owner = msaOwnerData[name].msa_owner;
+                        if (owner && owner.trim() !== "") color = ownerColors[owner] || ownerColors.UnassignedOrOther;
+                    }
+                    return { fillColor: color, weight: 1, opacity: 1, color: '#2c3e50', fillOpacity: 0.7 };
+                },
+                onEachFeature: (f, l) => {
+                    const name = f.properties && f.properties.NAME ? f.properties.NAME : "Unknown MSA";
+                    l.bindTooltip(name);
+                    let pop = `<b>MSA Name:</b> ${name}<br>`;
+                    const ownerInfo = msaOwnerData[name];
+                    pop += ownerInfo ? `<b>MSA Owner:</b> ${ownerInfo.msa_owner || "N/A"}<br><b>Supply Owner:</b> ${ownerInfo.supply_owner}` : "<i>Owner data not available.</i>";
+                    l.bindPopup(pop);
+                    l.on({ mouseover: e => { e.target.setStyle({ weight: 3, color: '#e74c3c', fillOpacity: 0.85 }); if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) e.target.bringToFront(); }, mouseout: e => geojsonLayer.resetStyle(e.target) });
+                }
+            }).addTo(map);
+        })
+        .catch(e => { console.error('Error loading map data:', e); alert('Could not load map data. Check console.'); });
+    </script>
+</body>
+</html>

@@ -1,95 +1,68 @@
-msa_name,msa_owner,supply_owner
-"Boston-Cambridge-Newton, MA-NH",Qasim,Mohammed
-"Detroit-Warren-Dearborn, MI",Qasim,Laila
-"Nashville-Davidson--Murfreesboro--Franklin, TN",Qasim,
-"Kansas City, MO-KS",Qasim,Laila
-"Springfield, MA",Qasim,
-"Worcester, MA-CT",Qasim,
-"Flint, MI",Qasim,
-"Providence-Warwick, RI-MA",Qasim,
-"Manchester-Nashua, NH",Qasim,
-"Barnstable Town, MA",Qasim,
-"Ann Arbor, MI",Qasim,
-"Lansing-East Lansing, MI",Qasim,
-"Shelbyville, TN",Qasim,
-"Clarksville, TN-KY",Qasim,
-"St. Joseph, MO-KS",Qasim,
-"Atchison, KS",Qasim,
-"Lawrence, KS",Qasim,
-"Ottawa, KS",Qasim,
-"Houston-The Woodlands-Sugar Land, TX",Abdul,Funmi
-"Charlotte-Concord-Gastonia, NC-SC",Abdul,Funmi
-"Washington-Arlington-Alexandria, DC-VA-MD-WV",Abdul,Ebimo
-"Minneapolis-St. Paul-Bloomington, MN-WI",Abdul,Laila
-"Portland-Vancouver-Hillsboro, OR-WA",Abdul,
-"Oklahoma City, OK",Abdul,Laila
-"Durham-Chapel Hill, NC",Abdul,
-"Greensboro-High Point, NC",Abdul,
-"Wilmington, NC",Abdul,
-"Hickory-Lenoir-Morganton, NC",Abdul,
-"St. Cloud, MN",Abdul,
-"Charleston-North Charleston, SC",Abdul,
-"Fayetteville, NC",Abdul,
-"La Crosse-Onalaska, WI-MN",Abdul,
-"Brainerd, MN",Abdul,
-"Columbia, SC",Abdul,
-"Asheville, NC",Abdul,
-"Burlington, NC",Abdul,
-"Greenville, NC",Abdul,
-"Baltimore-Columbia-Towson, MD",Abdul,Funmi
-"Dallas-Fort Worth-Arlington, TX",Abdul,Funmi
-"Sherman-Denison, TX",Abdul,
-"Pittsburgh, PA",Abdul,Funmi
-"Somerset, PA",Abdul,
-"Jacksonville, IL",Abdul,
-"Springfield, IL",Abdul,
-"Chicago-Naperville-Elgin, IL-IN-WI",Abdul,Laila
-"New York-Newark-Jersey City, NY-NJ-PA",Angela,Laila
-"Phoenix-Mesa-Chandler, AZ",Angela,
-"Los Angeles-Long Beach-Anaheim, CA",Angela,Ebimo
-"Riverside-San Bernardino-Ontario, CA",Angela,Ebimo
-"San Diego-Chula Vista-Carlsbad, CA",Angela,Ebimo
-"Austin-Round Rock-Georgetown, TX",Angela,Funmi
-"Seattle-Tacoma-Bellevue, WA",Angela,Ebimo
-"San Antonio-New Braunfels, TX",Angela,Funmi
-"Sacramento-Roseville-Folsom, CA",Angela,Ebimo
-"Milwaukee-Waukesha, WI",Angela,
-"Memphis, TN-MS-AR",Angela,
-"Oxnard-Thousand Oaks-Ventura, CA",Angela,
-"Fresno, CA",Angela,
-"Santa Maria-Santa Barbara, CA",Angela,
-"Philadelphia-Camden-Wilmington, PA-NJ-DE-MD",Angela,Funmi
-"Colorado Springs, CO",Angela,
-"Boulder, CO",Angela,
-"Greeley, CO",Angela,
-"Fort Morgan, CO",Angela,
-"Fort Collins, CO",Angela,
-"Denver-Aurora-Lakewood, CO",Angela,Funmi
-"St. Louis, MO-IL",Angela,Mohammed
-"Miami-Fort Lauderdale-Pompano Beach, FL",Jeanellah,Laila
-"Orlando-Kissimmee-Sanford, FL",Jeanellah,Laila
-"Cincinnati, OH-KY-IN",Jeanellah,Ebimo
-"Cleveland-Elyria, OH",Jeanellah,
-"Columbus, OH",Jeanellah,Ebimo
-"Akron, OH",Jeanellah,
-"Canton-Massillon, OH",Jeanellah,
-"Findlay, OH",Jeanellah,
-"Lima, OH",Jeanellah,
-"Zanesville, OH",Jeanellah,
-"Dayton-Kettering, OH",Jeanellah,
-"Fremont, OH",Jeanellah,
-"Sidney, OH",Jeanellah,
-"Louisville/Jefferson County, KY-IN",Jeanellah,Laila
-"New Philadelphia-Dover, OH",Jeanellah,
-"Youngstown-Warren-Boardman, OH-PA",Jeanellah,
-"Tampa-St. Petersburg-Clearwater, FL",Jeanellah,Laila
-"Indianapolis-Carmel-Anderson, IN",Jeanellah,
-"Marion, OH",Jeanellah,
-"Atlanta-Sandy Springs-Alpharetta, GA",Jeanellah,
-"Gainesville, GA",Jeanellah,
-"Athens-Clarke County, GA",Jeanellah,
-"Las Vegas-Henderson-Paradise, NV",Jeanellah,
-"Salt Lake City, UT",Jeanellah,Laila
-"Provo-Orem, UT",Jeanellah,Laila
-"Ogden-Clearfield, UT",Jeanellah,
-"St. George, UT",Jeanellah,
+MSAs	MSA Owner
+Atlanta-Sandy Springs-Alpharetta, GA	Joshua
+Gainesville, GA	Joshua
+Jefferson, GA	Joshua
+Athens-Clarke County, GA	Joshua
+Baltimore-Columbia-Towson, MD	Imane
+Washington-Arlington-Alexandria, DC-VA-MD-WV	Imane
+San Francisco-Oakland-Berkeley, CA	Angela
+San Jose-Sunnyvale-Santa Clara, CA	Angela
+Santa Rosa-Petaluma, CA	Angela
+Vallejo, CA	Angela
+Napa, CA	Angela
+Boston-Cambridge-Newton, MA-NH	Abdul
+Manchester-Nashua, NH	Abdul
+Worcester, MA-CT	Abdul
+Springfield, MA	Abdul
+Charlotte-Concord-Gastonia, NC-SC	Abdul
+Chicago-Naperville-Elgin, IL-IN-WI	Kay
+Ottawa, IL	Kay
+Cincinnati, OH-KY-IN	Jeanellah
+Dayton-Kettering, OH	Jeanellah
+Sidney, OH	Jeanellah
+Cleveland-Elyria, OH	Kay
+Akron, OH	Kay
+New Philadelphia-Dover, OH	Kay
+Columbus, OH	Jeanellah
+Marion, OH	Jeanellah
+Mount Vernon, OH	Jeanellah
+Zanesville, OH	Jeanellah
+Mansfield, OH	Jeanellah
+Chillicothe, OH	Jeanellah
+Dallas-Fort Worth-Arlington, TX	Laila
+Denver-Aurora-Lakewood, CO	Mohammed
+Boulder, CO	Mohammed
+Fort Collins, CO	Mohammed
+Colorado Springs, CO	Mohammed
+Detroit-Warren-Dearborn, MI	Edd
+Ann Arbor, MI	Edd
+Jackson, MI	Edd
+Lansing-East Lansing, MI	Edd
+Flint, MI	Edd
+Kansas City, MO-KS	Laila
+Las Vegas-Henderson-Paradise, NV	Angela
+Los Angeles-Long Beach-Anaheim, CA	Angela
+Riverside-San Bernardino-Ontario, CA	Angela
+Oxnard-Thousand Oaks-Ventura, CA	Angela
+Santa Maria-Santa Barbara, CA	Angela
+Minneapolis-St. Paul-Bloomington, MN-WI	Abdul
+Nashville-Davidson--Murfreesboro--Franklin, TN	Imane
+New York-Newark-Jersey City, NY-NJ-PA	Laila
+Bridgeport-Stamford-Norwalk, CT	Laila
+Philadelphia-Camden-Wilmington, PA-NJ-DE-MD	Edd
+Trenton-Princeton, NJ	Edd
+Vineland-Bridgeton, NJ	Edd
+Atlantic City-Hammonton, NJ	Edd
+Phoenix-Mesa-Chandler, AZ	Angela
+Pittsburgh, PA	Abdul
+New Castle, PA	Abdul
+Indiana, PA	Abdul
+Altoona, PA	Abdul
+Somerset, PA	Abdul
+Portland-Vancouver-Hillsboro, OR-WA	Joshua
+Salem, OR	Joshua
+Sacramento-Roseville-Folsom, CA	Mohammed
+Yuba City, CA	Mohammed
+San Diego-Chula Vista-Carlsbad, CA	Mohammed
+Seattle-Tacoma-Bellevue, WA	Angela
+St. Louis, MO-IL	Mohammed

@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MSA Ownership Map</title>
-    <!-- Tailwind CSS (for aesthetics) -->
+    <title>MSA Territory Ownership</title>
+    
+    <!-- Load Tailwind CSS for modern aesthetics -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
 
-    <!-- Leaflet CSS and JS -->
+    <!-- Load Leaflet CSS and JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
      crossorigin=""/>
@@ -19,38 +20,41 @@
     <style>
         /* Custom styles for map and responsive design */
         body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; background-color: #f7f7f7; }
-        #map { height: 80vh; width: 100%; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+        .container { max-width: 1400px; margin: 0 auto; padding: 1rem; }
+        #map { height: 85vh; width: 100%; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
         #legend {
             position: absolute;
             bottom: 20px;
             right: 20px;
             z-index: 1000;
-            background: white;
-            padding: 10px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 12px 16px;
             border-radius: 0.75rem;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             max-height: 50vh;
             overflow-y: auto;
+            border: 1px solid #e5e7eb;
         }
-        .legend-item { display: flex; align-items: center; margin-bottom: 5px; font-size: 0.875rem; }
-        .legend-color { width: 18px; height: 18px; border-radius: 4px; margin-right: 8px; border: 1px solid #333; }
+        .legend-item { display: flex; align-items: center; margin-bottom: 6px; font-size: 0.9rem; }
+        .legend-color { width: 18px; height: 18px; border-radius: 4px; margin-right: 10px; border: 1px solid #333; }
         .loading-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(255, 255, 255, 0.8); z-index: 10000;
+            background: rgba(255, 255, 255, 0.9); z-index: 10000;
             display: flex; justify-content: center; align-items: center;
             font-size: 1.5rem; font-weight: 600; color: #333;
-            border-radius: 0.75rem;
+            flex-direction: column;
         }
     </style>
 </head>
-<body class="p-4">
+<body>
 
     <div id="loading" class="loading-overlay">
-        <p>Loading map data... please wait.</p>
+        <p class="animate-pulse">Loading map data... please wait.</p>
+        <p id="error-message" class="text-sm text-red-500 mt-2 hidden"></p>
     </div>
 
-    <div class="max-w-7xl mx-auto">
-        <h1 class="text-3xl font-bold text-gray-800 mb-4 text-center">MSA Territory Ownership</h1>
+    <div class="container">
+        <h1 class="text-3xl font-bold text-gray-800 mb-4 text-center mt-2">MSA Territory Ownership Map</h1>
         <div id="map"></div>
     </div>
 
@@ -61,7 +65,7 @@
         const GEOJSON_FILE = 'cb_2018_us_cbsa_5m.geojson';
         const CSV_FILE = 'msa_owners.csv';
 
-        // Defined colors for each owner
+        // Defined colors for each owner, including Lavender Purple for Mohammed
         const ownerColors = {
             'Abdul': '#4e79a7',      // Blue
             'Angela': '#f28e2c',     // Orange
@@ -75,71 +79,85 @@
             'UnassignedOrOther': '#d4d4d4' // Light Gray for MSAs without owners
         };
 
+        const NORTH_AMERICA_BOUNDS = L.latLngBounds(
+            L.latLng(-10, -180), // South-West corner (to include some lower NA, AK, HI)
+            L.latLng(70, -50)   // North-East corner (to include upper Canada and East Coast)
+        );
+
         // --- Data Fetching and Preparation ---
 
         /**
-         * Parses CSV text into an array of objects. Assumes header row and comma/tab delimiter.
-         * @param {string} text - The raw CSV content.
-         * @returns {Array<object>} - An array of objects.
+         * Parses the specific quoted, comma-separated CSV format.
          */
         function parseCSV(text) {
-            // Check for common delimiters (comma, tab)
-            const isTab = text.includes('\t');
-            const delimiter = isTab ? '\t' : ',';
-
-            // Split into lines, filter out empty lines
+            console.log("Parsing CSV data...");
             const lines = text.trim().split('\r\n').filter(line => line.trim() !== '');
 
             if (lines.length < 2) return [];
 
-            // Simple header parsing (using the first line)
-            const headers = lines[0].split(delimiter).map(h => h.trim().replace(/"/g, ''));
-
+            // Simple handling of the quoted header row
+            const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
             const data = [];
+
             for (let i = 1; i < lines.length; i++) {
-                // Use a simple split, accounting for potential double quotes around values
-                const values = lines[i].split(delimiter).map(v => v.trim().replace(/"/g, ''));
-                if (values.length === headers.length) {
-                    let row = {};
-                    headers.forEach((header, index) => {
-                        row[header] = values[index];
-                    });
-                    data.push(row);
-                } else {
-                    console.warn(`Skipping malformed line: ${lines[i]}`);
+                // Split lines, accounting for quotes
+                // This uses a regex to split by comma outside of quotes (a common pattern for this CSV type)
+                const values = lines[i].match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g);
+                
+                if (!values || values.length !== headers.length) {
+                    console.warn(`Skipping malformed line (value count mismatch): ${lines[i]}`);
+                    continue;
                 }
+                
+                let row = {};
+                headers.forEach((header, index) => {
+                    // Remove quotes and trim whitespace
+                    row[header.trim()] = values[index] ? values[index].trim().replace(/^"|"$/g, '') : '';
+                });
+                data.push(row);
             }
             return data;
         }
 
         /**
          * Loads all data and prepares the MSA owner lookup map.
-         * @returns {Promise<{geojson: object, msaOwnerData: object}>}
          */
         async function loadData() {
             let geojson, msaOwnerCsvData;
+            
+            // Function to display error message on the loading overlay
+            const displayError = (message) => {
+                const errorEl = document.getElementById('error-message');
+                errorEl.textContent = `Error: ${message}. Check console for details.`;
+                errorEl.classList.remove('hidden');
+                document.getElementById('loading').classList.remove('animate-pulse');
+            };
+
 
             try {
                 // 1. Fetch GeoJSON
+                console.log(`Fetching GeoJSON from ${GEOJSON_FILE}...`);
                 const geojsonResponse = await fetch(GEOJSON_FILE);
-                if (!geojsonResponse.ok) throw new Error(`Failed to load GeoJSON: ${geojsonResponse.statusText}`);
+                if (!geojsonResponse.ok) throw new Error(`Failed to load GeoJSON (Status: ${geojsonResponse.status})`);
                 geojson = await geojsonResponse.json();
+                console.log(`GeoJSON loaded successfully. Features found: ${geojson.features.length}`);
 
                 // 2. Fetch CSV
+                console.log(`Fetching CSV from ${CSV_FILE}...`);
                 const csvResponse = await fetch(CSV_FILE);
-                if (!csvResponse.ok) throw new Error(`Failed to load CSV: ${csvResponse.statusText}`);
+                if (!csvResponse.ok) throw new Error(`Failed to load CSV (Status: ${csvResponse.status})`);
                 const csvText = await csvResponse.text();
                 msaOwnerCsvData = parseCSV(csvText);
+                console.log(`CSV loaded and parsed successfully. Records found: ${msaOwnerCsvData.length}`);
 
             } catch (error) {
                 console.error('Data loading error:', error);
-                document.getElementById('loading').innerHTML = `<p class="text-red-600">Error loading data: ${error.message}</p>`;
+                displayError(error.message);
                 throw error;
             }
 
             // 3. Create a lookup object for quick access by MSA name
-            // Key: Full MSA Name (e.g., "Atlanta-Sandy Springs-Alpharetta, GA")
-            // Value: Owner object (e.g., { msa_owner: "Joshua" })
+            // Uses 'msa_name' as the key
             const msaOwnerData = msaOwnerCsvData.reduce((acc, row) => {
                 const name = row.msa_name ? row.msa_name.trim() : null;
                 if (name) {
@@ -153,6 +171,9 @@
 
         // --- Leaflet Map Functions ---
 
+        /**
+         * Determines the styling for an MSA polygon based on its owner.
+         */
         function getStyle(feature, msaOwnerData) {
             const name = feature.properties.NAME;
             let color = ownerColors.UnassignedOrOther;
@@ -162,66 +183,74 @@
             if (name && msaOwnerData[name]) {
                 owner = msaOwnerData[name].msa_owner;
                 if (owner) {
+                    // Use the assigned owner color or the unassigned color if the owner isn't defined in ownerColors
                     color = ownerColors[owner] || ownerColors.UnassignedOrOther;
                 }
             }
 
             return {
                 fillColor: color,
-                weight: 1,
+                weight: 1.5, // Thicker border for better visibility
                 opacity: 1,
-                color: '#2c3e50', // Boundary color
+                color: color, // BORDER COLOR matches the owner color (requested change)
                 fillOpacity: 0.7
             };
         }
 
+        /**
+         * Sets up interactivity (tooltip, popup, hover effects) for each MSA polygon.
+         */
         function onEachFeature(feature, layer, msaOwnerData, geojsonLayer) {
             const name = feature.properties.NAME || "Unknown MSA";
-            let owner = 'N/A';
+            let owner = 'Unassigned';
             let ownerInfo = msaOwnerData[name];
-
+            
             if (ownerInfo && ownerInfo.msa_owner) {
                 owner = ownerInfo.msa_owner;
             }
 
-            // Tooltip on hover
+            // Tooltip on hover (shows owner immediately)
             layer.bindTooltip(`<strong>${name}</strong><br>Owner: ${owner}`, {
                 permanent: false,
-                direction: 'auto'
+                direction: 'auto',
+                sticky: true // Follow the mouse
             });
 
             // Popup on click
             let pop = `
-                <div class="font-sans">
-                    <h3 class="text-lg font-bold mb-1">${name}</h3>
-                    <p class="text-sm">Owner: <span class="font-semibold">${owner}</span></p>
+                <div class="font-sans text-gray-800">
+                    <h3 class="text-xl font-bold mb-1">${name}</h3>
+                    <p class="text-base">MSA Owner: <span class="font-semibold" style="color:${ownerColors[owner] || ownerColors.UnassignedOrOther}">${owner}</span></p>
                 </div>`;
             layer.bindPopup(pop);
 
-            // Interaction events
+            // Interaction events (Hover)
             layer.on({
                 mouseover: e => {
                     const layer = e.target;
                     layer.setStyle({
-                        weight: 3,
-                        color: '#333',
-                        fillOpacity: 0.85
+                        weight: 4, // Make the border even thicker on hover
+                        fillOpacity: 0.9
                     });
                     if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
                         layer.bringToFront();
                     }
                 },
                 mouseout: e => {
+                    // Reset to the original style
                     geojsonLayer.resetStyle(e.target);
                 }
             });
         }
 
+        /**
+         * Creates and displays the legend/key.
+         */
         function createLegend(colors) {
             const legendDiv = document.getElementById('legend');
-            let innerHTML = '<h4 class="text-base font-semibold mb-2">MSA Owner</h4>';
+            let innerHTML = '<h4 class="text-base font-semibold mb-3 text-gray-700 border-b pb-1">MSA Owner Key</h4>';
 
-            const owners = Object.keys(colors).filter(k => k !== 'UnassignedOrOther');
+            const owners = Object.keys(colors).filter(k => k !== 'UnassignedOrOther').sort();
             const allItems = [...owners, 'UnassignedOrOther'];
 
             allItems.forEach(owner => {
@@ -230,8 +259,8 @@
 
                 innerHTML += `
                     <div class="legend-item">
-                        <div class="legend-color" style="background-color: ${color}"></div>
-                        <div>${displayName}</div>
+                        <div class="legend-color" style="background-color: ${color}; border-color: ${color === '#d4d4d4' ? '#999' : '#333'}"></div>
+                        <div class="text-gray-700">${displayName}</div>
                     </div>
                 `;
             });
@@ -243,10 +272,18 @@
 
         window.onload = async function() {
             // Initialize Map
-            const map = L.map('map').setView([39.8283, -98.5795], 4); // Center of US
+            const map = L.map('map', {
+                center: [39.8283, -98.5795], // Center of US
+                zoom: 4,
+                minZoom: 3, // Prevent zooming out too far
+                maxBounds: NORTH_AMERICA_BOUNDS,
+                maxBoundsViscosity: 1.0 // Prevent panning outside the bounds
+            });
+            
+            // Add Tile Layer
             L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
-                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CARTO</a>',
-                maxZoom: 18
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> | &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                noWrap: true // Prevents repeating the map layer
             }).addTo(map);
 
             try {
@@ -260,15 +297,23 @@
                     onEachFeature: (feature, layer) => onEachFeature(feature, layer, msaOwnerData, geojsonLayer)
                 }).addTo(map);
 
-                // 3. Zoom to bounds of the GeoJSON data
-                map.fitBounds(geojsonLayer.getBounds());
+                // 3. Zoom to a tighter bounds of the US/Contiguous North America (optional, but good UX)
+                if (geojsonLayer.getBounds().isValid()) {
+                    map.fitBounds(geojsonLayer.getBounds(), { padding: [50, 50] });
+                } else {
+                    // Fallback zoom if data bounds are not valid
+                    map.setView([39.8283, -98.5795], 4);
+                }
+
 
                 // 4. Create Legend
                 createLegend(ownerColors);
 
             } catch (e) {
-                // Error handled in loadData, just ensuring the loading screen is hidden/updated
-                console.error('Map initialization failed:', e);
+                // Error handling done in loadData
+                console.error("Map failed to fully initialize.");
+                // Ensure loading screen is hidden in case of fatal error for visibility
+                document.getElementById('loading').style.display = 'flex'; 
             }
         };
     </script>

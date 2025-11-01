@@ -1,69 +1,68 @@
-msa_name	msa_owner
-Atlanta-Sandy Springs-Alpharetta, GA	Joshua
-Gainesville, GA	Joshua
-Jefferson, GA	Joshua
-Athens-Clarke County, GA	Joshua
-Baltimore-Columbia-Towson, MD	Imane
-Washington-Arlington-Alexandria, DC-VA-MD-WV	Imane
-San Francisco-Oakland-Berkeley, CA	Angela
-San Jose-Sunnyvale-Santa Clara, CA	Angela
-Santa Rosa-Petaluma, CA	Angela
-Vallejo, CA	Angela
-Napa, CA	Angela
-Boston-Cambridge-Newton, MA-NH	Abdul
-Manchester-Nashua, NH	Abdul
-Worcester, MA-CT	Abdul
-Springfield, MA	Abdul
-Charlotte-Concord-Gastonia, NC-SC	Abdul
-Chicago-Naperville-Elgin, IL-IN-WI	Kay
-Ottawa, IL	Kay
-Cincinnati, OH-KY-IN	Jeanellah
-Dayton-Kettering, OH	Jeanellah
-Sidney, OH	Jeanellah
-Cleveland-Elyria, OH	Kay
-Akron, OH	Kay
-New Philadelphia-Dover, OH	Kay
-Columbus, OH	Jeanellah
-Marion, OH	Jeanellah
-Mount Vernon, OH	Jeanellah
-Zanesville, OH	Jeanellah
-Mansfield, OH	Jeanellah
-Chillicothe, OH	Jeanellah
-Dallas-Fort Worth-Arlington, TX	Laila
-Denver-Aurora-Lakewood, CO	Mohammed
-Boulder, CO	Mohammed
-Fort Collins, CO	Mohammed
-Colorado Springs, CO	Mohammed
-Detroit-Warren-Dearborn, MI	Edd
-Ann Arbor, MI	Edd
-Jackson, MI	Edd
-Lansing-East Lansing, MI	Edd
-Flint, MI	Edd
-Kansas City, MO-KS	Laila
-Las Vegas-Henderson-Paradise, NV	Angela
-Los Angeles-Long Beach-Anaheim, CA	Angela
-Riverside-San Bernardino-Ontario, CA	Angela
-Oxnard-Thousand Oaks-Ventura, CA	Angela
-Santa Maria-Santa Barbara, CA	Angela
-Minneapolis-St. Paul-Bloomington, MN-WI	Abdul
-Nashville-Davidson--Murfreesboro--Franklin, TN	Imane
-New York-Newark-Jersey City, NY-NJ-PA	Laila
-Bridgeport-Stamford-Norwalk, CT	Laila
-Philadelphia-Camden-Wilmington, PA-NJ-DE-MD	Edd
-Trenton-Princeton, NJ	Edd
-Vineland-Bridgeton, NJ	Edd
-Atlantic City-Hammonton, NJ	Edd
-Phoenix-Mesa-Chandler, AZ	Angela
-Pittsburgh, PA	Abdul
-New Castle, PA	Abdul
-Indiana, PA	Abdul
-Altoona, PA	Abdul
-Somerset, PA	Abdul
-Portland-Vancouver-Hillsboro, OR-WA	Joshua
-Salem, OR	Joshua
-Sacramento-Roseville-Folsom, CA	Mohammed
-Yuba City, CA	Mohammed
-San Diego-Chula Vista-Carlsbad, CA	Mohammed
-Seattle-Tacoma-Bellevue, WA	Angela
-St. Louis, MO-IL	Mohammed
-
+msa_name,msa_owner
+"Atlanta-Sandy Springs-Alpharetta, GA",Joshua
+"Gainesville, GA",Joshua
+"Jefferson, GA",Joshua
+"Athens-Clarke County, GA",Joshua
+"Baltimore-Columbia-Towson, MD",Imane
+"Washington-Arlington-Alexandria, DC-VA-MD-WV",Imane
+"San Francisco-Oakland-Hayward, CA",Angela
+"San Jose-Sunnyvale-Santa Clara, CA",Angela
+"Santa Rosa, CA",Angela
+"Vallejo-Fairfield, CA",Angela
+"Napa, CA",Angela
+"Boston-Cambridge-Newton, MA-NH",Abdul
+"Manchester-Nashua, NH",Abdul
+"Worcester, MA-CT",Abdul
+"Springfield, MA",Abdul
+"Charlotte-Concord-Gastonia, NC-SC",Abdul
+"Chicago-Naperville-Elgin, IL-IN-WI",Kay
+"Ottawa-Peru, IL",Kay
+"Cincinnati, OH-KY-IN",Jeanellah
+"Dayton-Kettering, OH",Jeanellah
+"Sidney, OH",Jeanellah
+"Cleveland-Elyria, OH",Kay
+"Akron, OH",Kay
+"New Philadelphia-Dover, OH",Kay
+"Columbus, OH",Jeanellah
+"Marion, OH",Jeanellah
+"Mount Vernon, OH",Jeanellah
+"Zanesville, OH",Jeanellah
+"Mansfield, OH",Jeanellah
+"Chillicothe, OH",Jeanellah
+"Dallas-Fort Worth-Arlington, TX",Laila
+"Denver-Aurora-Lakewood, CO",Mohammed
+"Boulder, CO",Mohammed
+"Fort Collins, CO",Mohammed
+"Colorado Springs, CO",Mohammed
+"Detroit-Warren-Dearborn, MI",Edd
+"Ann Arbor, MI",Edd
+"Jackson, MI",Edd
+"Lansing-East Lansing, MI",Edd
+"Flint, MI",Edd
+"Kansas City, MO-KS",Laila
+"Las Vegas-Henderson-Paradise, NV",Angela
+"Los Angeles-Long Beach-Anaheim, CA",Angela
+"Riverside-San Bernardino-Ontario, CA",Angela
+"Oxnard-Thousand Oaks-Ventura, CA",Angela
+"Santa Maria-Santa Barbara, CA",Angela
+"Minneapolis-St. Paul-Bloomington, MN-WI",Abdul
+"Nashville-Davidson--Murfreesboro--Franklin, TN",Imane
+"New York-Newark-Jersey City, NY-NJ-PA",Laila
+"Bridgeport-Stamford-Norwalk, CT",Laila
+"Philadelphia-Camden-Wilmington, PA-NJ-DE-MD",Edd
+"Trenton, NJ",Edd
+"Vineland-Bridgeton, NJ",Edd
+"Atlantic City-Hammonton, NJ",Edd
+"Phoenix-Mesa-Chandler, AZ",Angela
+"Pittsburgh, PA",Abdul
+"New Castle, PA",Abdul
+"Indiana, PA",Abdul
+"Altoona, PA",Abdul
+"Somerset, PA",Abdul
+"Portland-Vancouver-Hillsboro, OR-WA",Joshua
+"Salem, OR",Joshua
+"Sacramento-Roseville-Folsom, CA",Mohammed
+"Yuba City, CA",Mohammed
+"San Diego-Chula Vista-Carlsbad, CA",Mohammed
+"Seattle-Tacoma-Bellevue, WA",Angela
+"St. Louis, MO-IL",Mohammed

@@ -105,9 +105,11 @@
             if (lines.length < 2) { return {}; }
             const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
             const data = {};
-            const msaNameIndex = headers.indexOf('msa_name'), msaOwnerIndex = headers.indexOf('msa_owner'), supplyOwnerIndex = headers.indexOf('supply_owner');
-            if (msaNameIndex === -1 || msaOwnerIndex === -1 || supplyOwnerIndex === -1) {
-                console.error("CSV parse error: Required headers not found."); alert("Error: Missing columns in msa_owners.csv."); return {};
+            const msaNameIndex = headers.indexOf('msa_name'), msaOwnerIndex = headers.indexOf('msa_owner');
+            if (msaNameIndex === -1 || msaOwnerIndex === -1) {
+                console.error("CSV parse error: Required headers not found.");
+                alert("Error: Missing columns in msa_owners.csv.");
+                return {};
             }
             for (let i = 1; i < lines.length; i++) {
                 let values = [], field = '', inQuotes = false;
@@ -119,7 +121,7 @@
                 values.push(field.trim());
                 if (values.length >= headers.length) {
                     const msaName = values[msaNameIndex].trim();
-                    data[msaName] = { msa_owner: values[msaOwnerIndex] ? values[msaOwnerIndex].trim() : "", supply_owner: values[supplyOwnerIndex] ? values[supplyOwnerIndex].trim() : "N/A" };
+                    data[msaName] = { msa_owner: values[msaOwnerIndex] ? values[msaOwnerIndex].trim() : "" };
                 }
             }
             return data;
@@ -165,9 +167,15 @@
                     l.bindTooltip(name);
                     let pop = `<b>MSA Name:</b> ${name}<br>`;
                     const ownerInfo = msaOwnerData[name];
-                    pop += ownerInfo ? `<b>MSA Owner:</b> ${ownerInfo.msa_owner || "N/A"}<br><b>Supply Owner:</b> ${ownerInfo.supply_owner}` : "<i>Owner data not available.</i>";
+                    pop += ownerInfo ? `<b>MSA Owner:</b> ${ownerInfo.msa_owner || "N/A"}` : "<i>Owner data not available.</i>";
                     l.bindPopup(pop);
-                    l.on({ mouseover: e => { e.target.setStyle({ weight: 3, color: '#e74c3c', fillOpacity: 0.85 }); if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) e.target.bringToFront(); }, mouseout: e => geojsonLayer.resetStyle(e.target) });
+                    l.on({
+                        mouseover: e => {
+                            e.target.setStyle({ weight: 3, color: '#e74c3c', fillOpacity: 0.85 });
+                            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) e.target.bringToFront();
+                        },
+                        mouseout: e => geojsonLayer.resetStyle(e.target)
+                    });
                 }
             }).addTo(map);
         })

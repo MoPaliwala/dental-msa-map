@@ -1,296 +1,177 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dental MSA Map</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dental MSA Map</title>
 
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-     crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-     crossorigin=""></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
 
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
-    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
-    <style>
-        #map { height: 700px; width: 100%; }
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-        h1 { text-align: center; padding: 10px; margin: 0; }
-        #legend {
-            position: absolute; bottom: 20px; right: 20px;
-            background: rgba(255, 255, 255, 0.9); padding: 12px;
-            border: 1px solid #ccc; border-radius: 5px; z-index: 1000;
-            font-size: 13px; line-height: 1.5; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-        #legend h4 { margin-top: 0; margin-bottom: 8px; text-align: center; font-size: 14px; font-weight: bold; }
-        .legend-item { display: flex; align-items: center; margin-bottom: 4px; }
-        .legend-color-box { width: 18px; height: 18px; margin-right: 10px; border: 1px solid #555; flex-shrink: 0; }
-    </style>
+    <style>
+        #map { height: 700px; width: 100%; }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+        h1 { text-align: center; padding: 10px; margin: 0; }
+        #legend {
+            position: absolute; bottom: 20px; right: 20px;
+            background: rgba(255, 255, 255, 0.9); padding: 12px;
+            border: 1px solid #ccc; border-radius: 5px; z-index: 1000;
+            font-size: 13px; line-height: 1.5; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        #legend h4 { margin-top: 0; margin-bottom: 8px; text-align: center; font-size: 14px; font-weight: bold; }
+        .legend-item { display: flex; align-items: center; margin-bottom: 4px; }
+        .legend-color-box { width: 18px; height: 18px; margin-right: 10px; border: 1px solid #555; flex-shrink: 0; }
+    </style>
 </head>
 <body>
-    <h1>Dental MSA Map</h1>
-    <div id="map"></div>
-    <div id="legend"><h4>MSA Ownership</h4></div>
+    <h1>Dental MSA Map</h1>
+    <div id="map"></div>
+    <div id="legend"><h4>MSA Ownership</h4></div>
 
-    <script>
-        var southWest = L.latLng(24.396308, -125.000000);
-        var northEast = L.latLng(49.384358, -66.934570);
-        var bounds = L.latLngBounds(southWest, northEast);
+    <script>
+        var southWest = L.latLng(24.396308, -125.000000);
+        var northEast = L.latLng(49.384358, -66.934570);
+        var bounds = L.latLngBounds(southWest, northEast);
 
-        var map = L.map('map', {
-            maxBounds: bounds,
-            maxBoundsViscosity: 1.0,
-            minZoom: 4
-        }).setView([39.8283, -98.5795], 4);
+        var map = L.map('map', {
+            maxBounds: bounds,
+            maxBoundsViscosity: 1.0,
+            minZoom: 4
+        }).setView([39.8283, -98.5795], 4);
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            minZoom: 3
-        }).addTo(map);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            minZoom: 3
+        }).addTo(map);
 
-        // --- Add Geocoder Control (Updated Configuration) ---
-        var geocodingService = L.Control.Geocoder.nominatim({
-            geocodingQueryParams: {
-                countrycodes: 'us' // Strongly bias results to the US
-            }
-        });
+        // --- Add Geocoder Control (Updated Configuration) ---
+        var geocodingService = L.Control.Geocoder.nominatim({
+            geocodingQueryParams: {
+                countrycodes: 'us'
+            }
+        });
 
-        L.Control.geocoder({
-            query: '',
-            placeholder: 'Search for a city or town...',
-            defaultMarkGeocode: true,
-            geocoder: geocodingService,
-            autocomplete: true,      // Ensure autocomplete is active
-            suggestMinLength: 1,     // Start suggesting from 1 character
-            suggestTimeout: 250,     // Debounce time for suggestions
-            collapsed: false,
-            position: 'topright',
-            errorMessage: 'Nothing found, try another search.'
-        })
-        .on('markgeocode', function(e) {
-            var bbox = e.geocode.bbox;
-            var center = e.geocode.center;
-            if (bbox) {
-                map.fitBounds(bbox);
-            } else {
-                map.setView(center, 10);
-            }
-            console.log("Geocode result:", e.geocode.name, "at", center);
-        })
-        .addTo(map);
-        // --- End Geocoder Control ---
+        L.Control.geocoder({
+            query: '',
+            placeholder: 'Search for a city or town...',
+            defaultMarkGeocode: true,
+            geocoder: geocodingService,
+            autocomplete: true,
+            suggestMinLength: 1,
+            suggestTimeout: 250,
+            collapsed: false,
+            position: 'topright',
+            errorMessage: 'Nothing found, try another search.'
+        })
+        .on('markgeocode', function(e) {
+            var bbox = e.geocode.bbox;
+            var center = e.geocode.center;
+            if (bbox) {
+                map.fitBounds(bbox);
+            } else {
+                map.setView(center, 10);
+            }
+            console.log("Geocode result:", e.geocode.name, "at", center);
+        })
+        .addTo(map);
+        // --- End Geocoder Control ---
 
-        var geojsonPath = 'cb_2018_us_cbsa_5m.geojson';
-        
-        // --- START: HARDCODED MSA OWNER DATA (Updated) ---
-        // This replaces the need to load and parse a separate CSV file.
-        let msaOwnerData = {
-            "Boston-Cambridge-Newton, MA-NH": { msa_owner: "Abdul" },
-            "Detroit-Warren-Dearborn, MI": { msa_owner: "Edd" },
-            "Nashville-Davidson--Murfreesboro--Franklin, TN": { msa_owner: "Imane" },
-            "Kansas City, MO-KS": { msa_owner: "Laila" },
-            "Springfield, MA": { msa_owner: "Abdul" },
-            "Worcester, MA-CT": { msa_owner: "Abdul" },
-            "Flint, MI": { msa_owner: "Edd" },
-            "Providence-Warwick, RI-MA": { msa_owner: "Qasim" },
-            "Manchester-Nashua, NH": { msa_owner: "Abdul" },
-            "Barnstable Town, MA": { msa_owner: "Qasim" },
-            "Ann Arbor, MI": { msa_owner: "Edd" },
-            "Lansing-East Lansing, MI": { msa_owner: "Edd" },
-            "Shelbyville, TN": { msa_owner: "Qasim" },
-            "Clarksville, TN-KY": { msa_owner: "Qasim" },
-            "St. Joseph, MO-KS": { msa_owner: "Qasim" },
-            "Atchison, KS": { msa_owner: "Qasim" },
-            "Lawrence, KS": { msa_owner: "Qasim" },
-            "Ottawa, KS": { msa_owner: "Qasim" },
-            "Houston-The Woodlands-Sugar Land, TX": { msa_owner: "Abdul" },
-            "Charlotte-Concord-Gastonia, NC-SC": { msa_owner: "Abdul" },
-            "Washington-Arlington-Alexandria, DC-VA-MD-WV": { msa_owner: "Imane" },
-            "Minneapolis-St. Paul-Bloomington, MN-WI": { msa_owner: "Abdul" },
-            "Portland-Vancouver-Hillsboro, OR-WA": { msa_owner: "Joshua" },
-            "Oklahoma City, OK": { msa_owner: "Abdul" },
-            "Durham-Chapel Hill, NC": { msa_owner: "Abdul" },
-            "Greensboro-High Point, NC": { msa_owner: "Abdul" },
-            "Wilmington, NC": { msa_owner: "Abdul" },
-            "Hickory-Lenoir-Morganton, NC": { msa_owner: "Abdul" },
-            "St. Cloud, MN": { msa_owner: "Abdul" },
-            "Charleston-North Charleston, SC": { msa_owner: "Abdul" },
-            "Fayetteville, NC": { msa_owner: "Abdul" },
-            "La Crosse-Onalaska, WI-MN": { msa_owner: "Abdul" },
-            "Brainerd, MN": { msa_owner: "Abdul" },
-            "Columbia, SC": { msa_owner: "Abdul" },
-            "Asheville, NC": { msa_owner: "Abdul" },
-            "Burlington, NC": { msa_owner: "Abdul" },
-            "Greenville, NC": { msa_owner: "Abdul" },
-            "Baltimore-Columbia-Towson, MD": { msa_owner: "Imane" },
-            "Dallas-Fort Worth-Arlington, TX": { msa_owner: "Laila" },
-            "Sherman-Denison, TX": { msa_owner: "Abdul" },
-            "Pittsburgh, PA": { msa_owner: "Abdul" },
-            "Somerset, PA": { msa_owner: "Abdul" },
-            "Jacksonville, IL": { msa_owner: "Abdul" },
-            "Springfield, IL": { msa_owner: "Abdul" },
-            "Chicago-Naperville-Elgin, IL-IN-WI": { msa_owner: "Kay" },
-            "New York-Newark-Jersey City, NY-NJ-PA": { msa_owner: "Laila" },
-            "Phoenix-Mesa-Chandler, AZ": { msa_owner: "Angela" },
-            "Los Angeles-Long Beach-Anaheim, CA": { msa_owner: "Angela" },
-            "Riverside-San Bernardino-Ontario, CA": { msa_owner: "Angela" },
-            "San Diego-Chula Vista-Carlsbad, CA": { msa_owner: "Mohammed" },
-            "Austin-Round Rock-Georgetown, TX": { msa_owner: "Angela" },
-            "Seattle-Tacoma-Bellevue, WA": { msa_owner: "Angela" },
-            "San Antonio-New Braunfels, TX": { msa_owner: "Angela" },
-            "Sacramento-Roseville-Folsom, CA": { msa_owner: "Mohammed" },
-            "Milwaukee-Waukesha, WI": { msa_owner: "Angela" },
-            "Memphis, TN-MS-AR": { msa_owner: "Angela" },
-            "Oxnard-Thousand Oaks-Ventura, CA": { msa_owner: "Angela" },
-            "Fresno, CA": { msa_owner: "Angela" },
-            "Santa Maria-Santa Barbara, CA": { msa_owner: "Angela" },
-            "Philadelphia-Camden-Wilmington, PA-NJ-DE-MD": { msa_owner: "Edd" },
-            "Colorado Springs, CO": { msa_owner: "Mohammed" },
-            "Boulder, CO": { msa_owner: "Mohammed" },
-            "Greeley, CO": { msa_owner: "Angela" },
-            "Fort Morgan, CO": { msa_owner: "Angela" },
-            "Fort Collins, CO": { msa_owner: "Mohammed" },
-            "Denver-Aurora-Lakewood, CO": { msa_owner: "Mohammed" },
-            "St. Louis, MO-IL": { msa_owner: "Mohammed" },
-            "Miami-Fort Lauderdale-Pompano Beach, FL": { msa_owner: "Jeanellah" },
-            "Orlando-Kissimmee-Sanford, FL": { msa_owner: "Jeanellah" },
-            "Cincinnati, OH-KY-IN": { msa_owner: "Jeanellah" },
-            "Cleveland-Elyria, OH": { msa_owner: "Kay" },
-            "Columbus, OH": { msa_owner: "Jeanellah" },
-            "Akron, OH": { msa_owner: "Kay" },
-            "Canton-Massillon, OH": { msa_owner: "Jeanellah" },
-            "Findlay, OH": { msa_owner: "Jeanellah" },
-            "Lima, OH": { msa_owner: "Jeanellah" },
-            "Zanesville, OH": { msa_owner: "Jeanellah" },
-            "Dayton-Kettering, OH": { msa_owner: "Jeanellah" },
-            "Fremont, OH": { msa_owner: "Jeanellah" },
-            "Sidney, OH": { msa_owner: "Jeanellah" },
-            "Louisville/Jefferson County, KY-IN": { msa_owner: "Jeanellah" },
-            "New Philadelphia-Dover, OH": { msa_owner: "Kay" },
-            "Youngstown-Warren-Boardman, OH-PA": { msa_owner: "Jeanellah" },
-            "Tampa-St. Petersburg-Clearwater, FL": { msa_owner: "Jeanellah" },
-            "Indianapolis-Carmel-Anderson, IN": { msa_owner: "Jeanellah" },
-            "Marion, OH": { msa_owner: "Jeanellah" },
-            "Atlanta-Sandy Springs-Alpharetta, GA": { msa_owner: "Joshua" },
-            "Gainesville, GA": { msa_owner: "Joshua" },
-            "Athens-Clarke County, GA": { msa_owner: "Joshua" },
-            "Las Vegas-Henderson-Paradise, NV": { msa_owner: "Angela" },
-            "Salt Lake City, UT": { msa_owner: "Jeanellah" },
-            "Provo-Orem, UT": { msa_owner: "Jeanellah" },
-            "Ogden-Clearfield, UT": { msa_owner: "Jeanellah" },
-            "St. George, UT": { msa_owner: "Jeanellah" },
-            // New MSAs:
-            "San Francisco-Oakland-Berkeley, CA": { msa_owner: "Angela" },
-            "San Jose-Sunnyvale-Santa Clara, CA": { msa_owner: "Angela" },
-            "Santa Rosa-Petaluma, CA": { msa_owner: "Angela" },
-            "Vallejo, CA": { msa_owner: "Angela" },
-            "Napa, CA": { msa_owner: "Angela" },
-            "Jefferson, GA": { msa_owner: "Joshua" },
-            "Ottawa, IL": { msa_owner: "Kay" },
-            "Mount Vernon, OH": { msa_owner: "Jeanellah" },
-            "Mansfield, OH": { msa_owner: "Jeanellah" },
-            "Chillicothe, OH": { msa_owner: "Jeanellah" },
-            "Salem, OR": { msa_owner: "Joshua" },
-            "Yuba City, CA": { msa_owner: "Mohammed" },
-            "Bridgeport-Stamford-Norwalk, CT": { msa_owner: "Laila" },
-            "Trenton-Princeton, NJ": { msa_owner: "Edd" },
-            "Vineland-Bridgeton, NJ": { msa_owner: "Edd" },
-            "Atlantic City-Hammonton, NJ": { msa_owner: "Edd" },
-            "New Castle, PA": { msa_owner: "Abdul" },
-            "Indiana, PA": { msa_owner: "Abdul" },
-            "Altoona, PA": { msa_owner: "Abdul" }
-        };
-        // --- END: HARDCODED MSA OWNER DATA ---
+        var geojsonPath = 'cb_2018_us_cbsa_5m.geojson';
+        var csvPath = 'msa_owners.csv';
+        let msaOwnerData = {};
 
+        const ownerColors = {
+            "Qasim": "#E41A1C",
+            "Abdul": "#377EB8",
+            "Angela": "#4DAF4A",
+            "Jeanellah": "#984EA3",
+            "Mohammed": "#B57EDC", // lavender purple
+            "Laila": "#FFB347",
+            "Kay": "#6A5ACD",
+            "Edd": "#FF69B4",
+            "Imane": "#00CED1",
+            "UnassignedOrOther": "#CCCCCC"
+        };
 
-        const ownerColors = {
-            "Qasim": "#E41A1C",          // Red
-            "Abdul": "#377EB8",          // Blue
-            "Angela": "#4DAF4A",         // Green
-            "Jeanellah": "#984EA3",      // Purple
-            "Joshua": "#FF7F00",        // Orange
-            "Imane": "#6A3D9A",         // Dark Purple
-            "Kay": "#A65628",           // Brown
-            "Edd": "#F781BF",           // Pink
-            "Laila": "#B2DF8A",         // Light Green/Teal
-            "Mohammed": "#FC4E2A",      // Dark Orange
-            "UnassignedOrOther": "#CCCCCC" // Gray
-        };
+        function parseCSV(text) {
+            const lines = text.trim().split('\n');
+            if (lines.length < 2) { return {}; }
+            const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+            const data = {};
+            const msaNameIndex = headers.indexOf('msa_name'), msaOwnerIndex = headers.indexOf('msa_owner'), supplyOwnerIndex = headers.indexOf('supply_owner');
+            if (msaNameIndex === -1 || msaOwnerIndex === -1 || supplyOwnerIndex === -1) {
+                console.error("CSV parse error: Required headers not found."); alert("Error: Missing columns in msa_owners.csv."); return {};
+            }
+            for (let i = 1; i < lines.length; i++) {
+                let values = [], field = '', inQuotes = false;
+                for (const char of lines[i]) {
+                    if (char === '"' && (lines[i][lines[i].indexOf(char)-1] !== '\\')) inQuotes = !inQuotes;
+                    else if (char === ',' && !inQuotes) { values.push(field.trim()); field = ''; }
+                    else field += char;
+                }
+                values.push(field.trim());
+                if (values.length >= headers.length) {
+                    const msaName = values[msaNameIndex].trim();
+                    data[msaName] = { msa_owner: values[msaOwnerIndex] ? values[msaOwnerIndex].trim() : "", supply_owner: values[supplyOwnerIndex] ? values[supplyOwnerIndex].trim() : "N/A" };
+                }
+            }
+            return data;
+        }
 
-        // List of all owners for legend generation
-        const allOwners = Object.keys(ownerColors);
-
-        // Simplified Promise.all as only geojson is fetched
-        fetch(geojsonPath).then(r => r.ok ? r.json() : Promise.reject(r.statusText))
-        .then(function(geojsonData) {
-            
-            const ownerCounts = {};
-            allOwners.forEach(k => ownerCounts[k] = 0);
-
-            // Calculate counts for legend and ensure MSAs are assigned to a color key
-            geojsonData.features.forEach(f => {
-                const name = f.properties && f.properties.NAME ? f.properties.NAME : null;
-                let ownerKey = "UnassignedOrOther";
-                
-                // Use the hardcoded data
-                if (name && msaOwnerData[name]) {
-                    const owner = msaOwnerData[name].msa_owner;
-                    if (owner && owner.trim() !== "" && ownerColors[owner]) {
-                        ownerKey = owner;
-                    }
-                }
-                ownerCounts[ownerKey]++;
-            });
-            
-            // Build the legend dynamically
-            const legendDiv = document.getElementById('legend');
-            allOwners.forEach(name => {
-                // Only show owners with at least one MSA, or 'Unassigned'
-                if (ownerCounts.hasOwnProperty(name) && ownerCounts[name] > 0 || name === "UnassignedOrOther") {
-                    const item = document.createElement('div'); 
-                    item.className = 'legend-item';
-                    item.innerHTML = `<div class="legend-color-box" style="background-color:${ownerColors[name]};"></div><span>${name === "UnassignedOrOther" ? "Unassigned / Other" : name}: ${ownerCounts[name]}</span>`;
-                    legendDiv.appendChild(item);
-                }
-            });
-
-            // Initialize GeoJSON layer
-            var geojsonLayer = L.geoJSON(geojsonData, {
-                style: f => {
-                    let color = ownerColors.UnassignedOrOther;
-                    const name = f.properties && f.properties.NAME ? f.properties.NAME : null;
-                    
-                    // Set color based on updated msaOwnerData
-                    if (name && msaOwnerData[name]) {
-                        const owner = msaOwnerData[name].msa_owner;
-                        if (owner && owner.trim() !== "") {
-                            color = ownerColors[owner] || ownerColors.UnassignedOrOther;
-                        }
-                    }
-                    return { fillColor: color, weight: 1, opacity: 1, color: '#2c3e50', fillOpacity: 0.7 };
-                },
-                onEachFeature: (f, l) => {
-                    const name = f.properties && f.properties.NAME ? f.properties.NAME : "Unknown MSA";
-                    l.bindTooltip(name);
-                    let pop = `<b>MSA Name:</b> ${name}<br>`;
-                    const ownerInfo = msaOwnerData[name];
-                    
-                    // Updated popup: only show MSA Owner (Supply Owner removed)
-                    pop += ownerInfo ? `<b>MSA Owner:</b> ${ownerInfo.msa_owner || "N/A"}` : "<i>Owner data not available.</i>";
-                    l.bindPopup(pop);
-                    
-                    // Highlight on hover
-                    l.on({ 
-                        mouseover: e => { e.target.setStyle({ weight: 3, color: '#e74c3c', fillOpacity: 0.85 }); if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) e.target.bringToFront(); }, 
-                        mouseout: e => geojsonLayer.resetStyle(e.target) 
-                    });
-                }
-            }).addTo(map);
-        })
-        .catch(e => { console.error('Error loading map data:', e); alert('Could not load map data. Check console.'); });
-    </script>
+        Promise.all([
+            fetch(geojsonPath).then(r => r.ok ? r.json() : Promise.reject(r.statusText)),
+            fetch(csvPath).then(r => r.ok ? r.text() : Promise.reject(r.statusText))
+        ])
+        .then(function([geojsonData, csvTextData]) {
+            msaOwnerData = parseCSV(csvTextData);
+            const ownerCounts = {};
+            Object.keys(ownerColors).forEach(k => ownerCounts[k] = 0);
+            geojsonData.features.forEach(f => {
+                const name = f.properties && f.properties.NAME ? f.properties.NAME : null;
+                let ownerKey = "UnassignedOrOther";
+                if (name && msaOwnerData[name]) {
+                    const owner = msaOwnerData[name].msa_owner;
+                    if (owner && owner.trim() !== "" && ownerColors[owner]) ownerKey = owner;
+                }
+                ownerCounts[ownerKey]++;
+            });
+            const legendDiv = document.getElementById('legend');
+            ["Qasim", "Abdul", "Angela", "Jeanellah", "Mohammed", "Laila", "Kay", "Edd", "Imane", "UnassignedOrOther"].forEach(name => {
+                if (ownerCounts.hasOwnProperty(name)) {
+                    const item = document.createElement('div'); item.className = 'legend-item';
+                    item.innerHTML = `<div class="legend-color-box" style="background-color:${ownerColors[name]};"></div><span>${name === "UnassignedOrOther" ? "Unassigned / Other" : name}: ${ownerCounts[name]}</span>`;
+                    legendDiv.appendChild(item);
+                }
+            });
+            var geojsonLayer = L.geoJSON(geojsonData, {
+                style: f => {
+                    let color = ownerColors.UnassignedOrOther;
+                    const name = f.properties && f.properties.NAME ? f.properties.NAME : null;
+                    if (name && msaOwnerData[name]) {
+                        const owner = msaOwnerData[name].msa_owner;
+                        if (owner && owner.trim() !== "") color = ownerColors[owner] || ownerColors.UnassignedOrOther;
+                    }
+                    return { fillColor: color, weight: 1, opacity: 1, color: '#2c3e50', fillOpacity: 0.7 };
+                },
+                onEachFeature: (f, l) => {
+                    const name = f.properties && f.properties.NAME ? f.properties.NAME : "Unknown MSA";
+                    l.bindTooltip(name);
+                    let pop = `<b>MSA Name:</b> ${name}<br>`;
+                    const ownerInfo = msaOwnerData[name];
+                    pop += ownerInfo ? `<b>MSA Owner:</b> ${ownerInfo.msa_owner || "N/A"}<br><b>Supply Owner:</b> ${ownerInfo.supply_owner}` : "<i>Owner data not available.</i>";
+                    l.bindPopup(pop);
+                    l.on({ mouseover: e => { e.target.setStyle({ weight: 3, color: '#e74c3c', fillOpacity: 0.85 }); if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) e.target.bringToFront(); }, mouseout: e => geojsonLayer.resetStyle(e.target) });
+                }
+            }).addTo(map);
+        })
+        .catch(e => { console.error('Error loading map data:', e); alert('Could not load map data. Check console.'); });
+    </script>
 </body>
 </html>
